@@ -11,6 +11,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	log "github.com/inconshreveable/log15"
@@ -123,7 +124,7 @@ func makePostRequest(route string, payload *strings.Reader) ([]byte, error) {
 	return body, nil
 }
 
-func updateValuesContractCall(contractAddressInput string) string {
+func updateValuesContractCall(contractAddressInput string) *types.Transaction {
 	// create a new Ethereum client
 	client, err := ethclient.Dial("https://mainnet.infura.io")
 	if err != nil {
@@ -132,7 +133,7 @@ func updateValuesContractCall(contractAddressInput string) string {
 
 	// create a new instance of the contract
 	contractAddress := common.HexToAddress(contractAddressInput)
-	demo_contract, err := contractsv1.NewStore(contractAddress, client)
+	demo_contract, err := contractsv1.NewMain(contractAddress, client)
 	if err != nil {
 		log.Error("error", "err", err)
 	}
@@ -151,7 +152,8 @@ func updateValuesContractCall(contractAddressInput string) string {
 	auth.GasPrice = big.NewInt(1000000000)
 
 	// sign and send the transaction
-	tx, err := demo_contract.changeValues(auth, "write all the updating values here as parameter separated by ,")
+	tx, err := demo_contract.Set(auth)
+	// (auth, "write all the updating values here as parameter separated by ,")
 	if err != nil {
 		log.Error("error", "err", err)
 	}
@@ -160,6 +162,6 @@ func updateValuesContractCall(contractAddressInput string) string {
 	}
 
 	// print the transaction hash
-	log.Info("Transaction sent", "tx hash", tx.Hash())
-	return string(tx.Hash())
+	log.Info("Transaction sent", "tx hash", tx)
+	return tx
 }
