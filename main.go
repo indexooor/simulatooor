@@ -4,11 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-
+	"math/big"
 	"net/http"
 	"os"
 	"strings"
 
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/ethclient"
 	log "github.com/inconshreveable/log15"
 )
 
@@ -115,45 +119,44 @@ func makePostRequest(route string, payload *strings.Reader) ([]byte, error) {
 	return body, nil
 }
 
-func updateValuesContractCall(contractAddressInput string) (string){
-   // create a new Ethereum client
-   client, err := ethclient.Dial("https://mainnet.infura.io")
-   if err != nil {
-	   log.Fatal(err)
-   }
+func updateValuesContractCall(contractAddressInput string) string {
+	// create a new Ethereum client
+	client, err := ethclient.Dial("https://mainnet.infura.io")
+	if err != nil {
+		log.Error("error", "err", err)
+	}
 
-    // create a new instance of the contract
-    contractAddress := common.HexToAddress(contractAddressInput)
-    contract, err := NewContract(contractAddress, client)
-    if err != nil {
-        log.Fatal(err)
-    }
+	// create a new instance of the contract
+	contractAddress := common.HexToAddress(contractAddressInput)
+	contract, err := store.NewStore(contractAddress, client)
+	if err != nil {
+		log.Error("error", "err", err)
+	}
 
+	// create a new private key
+	privateKey, err := crypto.HexToECDSA("private-key-here")
+	if err != nil {
+		log.Error("error", "err", err)
+	}
 
-    // create a new private key
-    privateKey, err := crypto.HexToECDSA("private-key-here")
-    if err != nil {
-        log.Fatal(err)
-    }
+	// create a new transaction object
+	auth := bind.NewKeyedTransactor(privateKey)
+	auth.Nonce = big.NewInt(0)
+	auth.Value = big.NewInt(0)
+	auth.GasLimit = uint64(300000)
+	auth.GasPrice = big.NewInt(1000000000)
 
-    // create a new transaction object
-    auth := bind.NewKeyedTransactor(privateKey)
-    auth.Nonce = big.NewInt(0)
-    auth.Value = big.NewInt(0)
-    auth.GasLimit = uint64(300000)
-    auth.GasPrice = big.NewInt(1000000000)
+	// sign and send the transaction
+	tx, err := contract.changeValues(auth, "write all the updating values here as parameter separated by ,")
+	if err != nil {
+		log.Error("error", "err", err)
+	}
+	err = tx.Send()
+	if err != nil {
+		log.Error("error", "err", err)
+	}
 
-    // sign and send the transaction
-    tx, err := contract.changeValues(auth,"write all the updating values here as parameter separated by ,")
-    if err != nil {
-        log.Fatal(err)
-    }
-    err = tx.Send()
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    // print the transaction hash
-    log.Println("Transaction hash:", tx.Hash().Hex())
+	// print the transaction hash
+	log.Info("Transaction sent", "tx hash", tx.Hash())
 	return string(tx.Hash())
 }
