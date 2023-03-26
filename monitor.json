@@ -1,0 +1,17 @@
+{
+    "contractAddress" : "0xB0F3056D4f6F55cAA65610CF522DD3516E7D72BC",
+    "no_of_variables" : 10,
+    "variables" : [
+        {"name" : "val1"},
+        {"name" : "bool1"},
+        {"name" : "str1"},
+        {"name" : "addr1"},
+        {"name" : "arr", "key": "0"},
+        {"name" : "arr", "key": "1"},
+        {"name" : "arr", "key": "2"},
+        {"name" : "arr", "key": "3"},
+        {"name" : "arr", "key": "4"},
+        {"name" : "balances", "key": "0x0f3aac271357DdE397c6a59204Cf5FD2Ac7f78ea"},
+        {"name" : "balances2", "key": "0x0f3aac271357DdE397c6a59204Cf5FD2Ac7f78ea","deep_key": "0x0f3aac271357DdE397c6a59204Cf5FD2Ac7f78ea"}
+    ]
+}
