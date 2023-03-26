@@ -14,7 +14,10 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	log "github.com/inconshreveable/log15"
-    store "./contracts"
+
+	// store "./contracts"
+	// "github.com/indexooor/simulatooor/contracts"
+	"github.com/indexooor/simulatooor/contractsv1"
 )
 
 func main() {
@@ -129,7 +132,7 @@ func updateValuesContractCall(contractAddressInput string) string {
 
 	// create a new instance of the contract
 	contractAddress := common.HexToAddress(contractAddressInput)
-	contract, err := store.NewStore(contractAddress, client)
+	demo_contract, err := contractsv1.NewStore(contractAddress, client)
 	if err != nil {
 		log.Error("error", "err", err)
 	}
@@ -148,7 +151,7 @@ func updateValuesContractCall(contractAddressInput string) string {
 	auth.GasPrice = big.NewInt(1000000000)
 
 	// sign and send the transaction
-	tx, err := contract.changeValues(auth, "write all the updating values here as parameter separated by ,")
+	tx, err := demo_contract.changeValues(auth, "write all the updating values here as parameter separated by ,")
 	if err != nil {
 		log.Error("error", "err", err)
 	}

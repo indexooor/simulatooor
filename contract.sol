@@ -1,30 +1,49 @@
-// SPDX-License-Identifier: GPL-3.0
- 
+// SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.0;
- 
- 
-contract demoContract{
-    uint256 public val1 ;
+
+contract Temp3 {
+    uint256 public val1;
     bool public bool1;
-    address public addr1;
     string public str1;
+    address addr1;
+
+    mapping(address => uint256) public balances;
+    mapping(address => mapping(address => uint256)) public balances2;
+
     uint256[] public arr;
-    mapping(address => uint256) balances;
-    mapping(address => mapping(address => uint256)) balances2;
- 
- 
-    function changeValues(uint256 newValue,bool newBool,address newAddress,string newString,uint256 newArrayElement,uint256 newBalances2,address addr1Balances2,address addr2Balances2,uint256 newBalances,address addrBalances) external{
-        val1 = newValue;
-        bool1 = newBool;
-        addr1= newAddress;
-        str1=newString;
-        arr.push(newArrayElement);
-        arr.push(15);
-        balances2[addr1Balances2][addr2Balances2]=newBalances2;
-        balances[addrBalances] = newBalances;
+
+    struct Temp {
+        string name;
+        uint256 val;
     }
-    function changeArrayValueAtIndex(uint256 index,uint256 newValue) external{
-        arr[index]= newValue;
+    Temp public temp;
+
+    function set() public {
+        val1 = 5;
+        bool1 = true;
+        str1 = "Indexooor rocks";
+        balances[0x0f3aac271357DdE397c6a59204Cf5FD2Ac7f78ea] = val1;
+        balances2[0x0f3aac271357DdE397c6a59204Cf5FD2Ac7f78ea][
+            0x0f3aac271357DdE397c6a59204Cf5FD2Ac7f78ea
+        ] = val1;
+        arr.push(1);
+        arr.push(2);
+        arr.push(3);
+        arr.push(4);
+        arr.push(5);
+        Temp memory _temp = Temp(str1, val1);
+        temp = _temp;
+
+        addr1 = 0x0f3aac271357DdE397c6a59204Cf5FD2Ac7f78ea;
     }
- 
+
+    function set2() public {
+        val1 = 10;
+        bool1 = false;
+        str1 = "Hello world";
+        balances[msg.sender] = val1;
+        Temp memory _temp = Temp(str1, val1);
+        temp = _temp;
+    }
 }
