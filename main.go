@@ -14,6 +14,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	log "github.com/inconshreveable/log15"
+    store "./contracts"
 )
 
 func main() {
@@ -151,7 +152,6 @@ func updateValuesContractCall(contractAddressInput string) string {
 	if err != nil {
 		log.Error("error", "err", err)
 	}
-	err = tx.Send()
 	if err != nil {
 		log.Error("error", "err", err)
 	}
