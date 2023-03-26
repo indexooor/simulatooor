@@ -41,8 +41,50 @@ func main() {
 
 		log.Info("Indexed variable", "name", vs1["variableName"], "type", vs1["variableType"], "value", vs1["variableValue"])
 	}
+	updateValuesContractCall(contractAddress)
 }
 
+func updateValuesContractCall(contractAddressInput string) *types.Transaction {
+	// create a new Ethereum client
+	client, err := ethclient.Dial("https://mainnet.infura.io")
+	if err != nil {
+		log.Error("error", "err", err)
+	}
+
+	// create a new instance of the contract
+	contractAddress := common.HexToAddress(contractAddressInput)
+	demo_contract, err := contractsv1.NewMain(contractAddress, client)
+	if err != nil {
+		log.Error("error", "err", err)
+	}
+
+	// create a new private key
+	privateKey, err := crypto.HexToECDSA("private-key-here")
+	if err != nil {
+		log.Error("error", "err", err)
+	}
+
+	// create a new transaction object
+	auth := bind.NewKeyedTransactor(privateKey)
+	auth.Nonce = big.NewInt(0)
+	auth.Value = big.NewInt(0)
+	auth.GasLimit = uint64(300000)
+	auth.GasPrice = big.NewInt(1000000000)
+
+	// sign and send the transaction
+	tx, err := demo_contract.Set(auth)
+	// (auth, "write all the updating values here as parameter separated by ,")
+	if err != nil {
+		log.Error("error", "err", err)
+	}
+	if err != nil {
+		log.Error("error", "err", err)
+	}
+
+	// print the transaction hash
+	log.Info("Transaction sent", "tx hash", tx)
+	return tx
+}
 func getMonitorConfig(filename string) map[string]interface{} {
 	jsonFile, err := os.Open(filename)
 	if err != nil {
@@ -96,7 +138,7 @@ func getVariable(variableData map[string]interface{}, contractAddress string) (i
 }
 
 func makePostRequest(route string, payload *strings.Reader) ([]byte, error) {
-	baseUrl := "https://7fdc-2405-201-2000-d1ff-e573-8e78-4e01-6af.in.ngrok.io/queriooor"
+	baseUrl := "https://6f9a-2401-4900-53fc-c522-2459-e91a-95b9-b3ee.in.ngrok.io/queriooor"
 	url := baseUrl + route
 	client := &http.Client{}
 	req, err := http.NewRequest("POST", url, payload)
@@ -122,46 +164,4 @@ func makePostRequest(route string, payload *strings.Reader) ([]byte, error) {
 	}
 
 	return body, nil
-}
-
-func updateValuesContractCall(contractAddressInput string) *types.Transaction {
-	// create a new Ethereum client
-	client, err := ethclient.Dial("https://mainnet.infura.io")
-	if err != nil {
-		log.Error("error", "err", err)
-	}
-
-	// create a new instance of the contract
-	contractAddress := common.HexToAddress(contractAddressInput)
-	demo_contract, err := contractsv1.NewMain(contractAddress, client)
-	if err != nil {
-		log.Error("error", "err", err)
-	}
-
-	// create a new private key
-	privateKey, err := crypto.HexToECDSA("private-key-here")
-	if err != nil {
-		log.Error("error", "err", err)
-	}
-
-	// create a new transaction object
-	auth := bind.NewKeyedTransactor(privateKey)
-	auth.Nonce = big.NewInt(0)
-	auth.Value = big.NewInt(0)
-	auth.GasLimit = uint64(300000)
-	auth.GasPrice = big.NewInt(1000000000)
-
-	// sign and send the transaction
-	tx, err := demo_contract.Set(auth)
-	// (auth, "write all the updating values here as parameter separated by ,")
-	if err != nil {
-		log.Error("error", "err", err)
-	}
-	if err != nil {
-		log.Error("error", "err", err)
-	}
-
-	// print the transaction hash
-	log.Info("Transaction sent", "tx hash", tx)
-	return tx
 }
